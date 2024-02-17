@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!--meta tags-->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!--CSS customization-->
+        <link rel="stylesheet" href="/static/styles.css">
+
+        <!--Add jQuery-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <title>FPL Catch Fire Index</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="text-center mt-4">CFi Index</h1>
+
+            <div class="row">
+                <div class="col">
+                    <!-- Images go here-->
+                </div>
+                <div class="col-8">
+                    <!-- Primary dropdown menu-->
+                    <select class="custom-select mb-4" id="playerFilter" onchange="filterTypeChanged()">
+                        <option selected>Choose...</option>
+                        <option value="all">All Players</option>
+                        <option value="position">Position</option>
+                        <option value="team">Team</option>
+                    </select>
+
+                    <!--Secondary dropdown menus-->
+                    <!--Team selection-->
+                    <div id="teamDropdown" style="display: none;">
+                        <select class="custom-select mb-4" id="teamFilter" onchange="filterPlayers()">
+                            {% for key, team in team_mapping.items() %}
+                            <option value="{{ key }}">{{ team }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!--Position selection-->
+                    <div id="positionDropdown" style="display: none;">
+                        <select class="custom-select mb-4" id="positionFilter" onchange="filterPlayers()">
+                            {% for key, position in position_mapping.items() %}
+                            <option value="{{ key }}">{{ position }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!--Results table-->
+                    <table id="dataTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Player Name</th>
+                                <th>Team</th>
+                                <th>Position</th>
+                                <th>CFi</th>
+                            </tr>
+                        </thead>
+                        <!--Loop over variable 'players' from render_template function for table data-->
+                        <tbody id="dataTable">
+                            {% for player in players %}
+                            <tr>
+                                <td>{{ player.player_name }}</td>
+                                <td>{{ player.team }}</td>
+                                <td>{{ player.position }}</td>
+                                <td>{{ player.CFi }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col">
+                    <!--images go here-->
+                </div>
+            </div>
+        </div>
+
+        <!--bootstrap bundle-->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        <script>
+            function filterTypeChanged() {
+                var selection = document.getElementById("playerFilter").value;
+
+                // Hide both secondary dropdowns beforehand
+                document.getElementById("teamDropdown").style.display = "none";
+                document.getElementById("positionDropdown").style.display = "none";
+
+                // Display dropdown based on selection
+                if (selection == "team") {
+                    document.getElementById("teamDropdown").style.display = "block";
+                } else if (selection == "position") {
+                    document.getElementById("positionDropdown").style.display = "block";
+                } else if (selection == "all") {
+                    filterPlayers();
+                }
+            }
+            function filterPlayers() {
+                var filterType = document.getElementById("playerFilter").value;
+
+                var teamValue, positionValue;
+                if (filterType === "team") {
+                    teamValue = document.getElementById("teamFilter").value; //get selected team name
+                } else if (filterType === "position") {
+                    positionValue = document.getElementById("positionFilter").value; //get selected position name
+                }
+
+
+
+                $.ajax({
+                    url: '/filter_players', //Flask route to handle filtering
+                    type: 'POST',
+                    data: {
+                        'filter': filterType,
+                        'team': teamValue,
+                        'position': positionValue
+                    },
+                    dataType: 'json',
+                    //update table in front end with new data
+                    success: function(players_data) {
+                        // Clear the existing table rows
+                        var tbody = document.querySelector("table tbody");
+                        tbody.innerHTML = '';
+
+                        // Populate the table with new data
+                        players_data.forEach(function(player) {
+                            var tr = document.createElement('tr');
+
+                            var tdName = document.createElement('td');
+                            tdName.textContent = player.player_name;
+
+                            var tdTeam = document.createElement('td');
+                            tdTeam.textContent = player.team;
+
+                            var tdPosition = document.createElement('td');
+                            tdPosition.textContent = player.position;
+
+                            var tdCFi = document.createElement('td');
+                            tdCFi.textContent = player.CFi;
+
+                            tr.appendChild(tdName);
+                            tr.appendChild(tdTeam);
+                            tr.appendChild(tdPosition);
+                            tr.appendChild(tdCFi);
+
+                            tbody.appendChild(tr);
+                        });
+                    }
+                });
+            }
+
+        </script>
+    </body>
+</html>

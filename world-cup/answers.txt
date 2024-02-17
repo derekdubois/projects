@@ -1,0 +1,15 @@
+Times:
+
+10 simulations: 0m0.025s
+100 simulations: 0m0.027s
+1000 simulations: 0m0.035s
+10000 simulations: 0m0.138s
+100000 simulations: 0m0.785s
+1000000 simulations: 0m7.569s
+
+Questions:
+
+Which predictions, if any, proved incorrect as you increased the number of simulations?: That compute time would increase at a similar magnitude as the increase in simulations.
+
+Suppose you're charged a fee for each second of compute time your program uses.
+After how many simulations would you call the predictions "good enough"?: 1000 simulations would be good enough for me, because after that compute time significantly increases with each order of magnitude of increases in simulations. This appears to be the sweet spot in cost-benefit analysis. 
