@@ -1,3 +1,0 @@
-Given the above-average tempo, I would probably characterize them as orange to fit with the high-energy description.
-
-In order to improve the algorithm, we might could include the key of the song as a parameter in order to better reflect the mood of the music the listener enjoys.
